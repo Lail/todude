@@ -5,8 +5,8 @@ class Task < ActiveRecord::Base
   validates :name, 
     presence: true,
     length: { maximum: 500, too_long: "%{count} characters is the maximum allowed" },
-    uniqueness: { scope: :project_id }
-  validates_inclusion_of :completed, in: [true, false]
+    uniqueness: { scope: :project, message: "sholud be unique" }
+  validates_inclusion_of :completed, { in: [true, false], message: "must be set" }
   validates :project, 
     presence: true
 

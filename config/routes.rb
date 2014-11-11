@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
-  resources :projects, except: [:new, :edit]
+  resources :projects, except: [:new, :edit], constraints: { format: 'json' } do
+    resources :tasks, except: [:new, :edit], constraints: { format: 'json' }
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
