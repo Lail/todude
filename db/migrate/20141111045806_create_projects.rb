@@ -1,8 +1,8 @@
 class CreateProjects < ActiveRecord::Migration
   def change
     create_table :projects do |t|
-      t.string :name
-      t.string :color
+      t.string :name, required: true
+      t.string :color, required: true
 
       t.timestamps
     end
