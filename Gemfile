@@ -38,3 +38,14 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+group :development, :test do
+  gem 'rspec-rails', '~> 3.0.0'
+  gem 'pry-rails'
+end
+
+group :test do
+  gem 'factory_girl_rails'
+  gem 'poltergeist'
+  gem 'capybara', '~> 2.4.1'
+  gem 'database_cleaner'
+end
