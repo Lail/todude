@@ -9,12 +9,9 @@ $(function(){
       	id: ko.observable(),
       	name: ko.observable().extend({ rateLimit: 100 }),
       	color: ko.observable('#eeeeee'),
-      	tasks: ko.observableArray([
-          {name: 'The very first thing', completed: false, id: 1},
-          {name: 'The second thing', completed: true, id: 2},
-          {name: 'The third thing', completed: false, id: 3}
-        ])
+        editing: false
       }
+    self.tasks = ko.observableArray();
     self.errors = ko.observableArray([]);
     self.loading = ko.observable(0);
 
@@ -26,7 +23,7 @@ $(function(){
       self.project.id(null);
       self.project.name(null);
       self.project.color(self.randomColor());
-      self.project.tasks([]);
+      self.tasks.removeAll();
       focusTitle();
     }
 
@@ -38,12 +35,45 @@ $(function(){
       self.getProject(obj.id);
     }
 
+    self.editTask = function(obj){
+      obj.editing(true);
+    }
+
     self.saveProject = function(obj){
-      self.postProject(self.project.id());
+      var data = {
+        name: self.project.name(),
+        color: self.project.color()
+      }
+      self.postProject(self.project.id(), data);
     }
 
     self.destroyProject = function(obj){
       self.deleteProject(self.project.id());
+    }
+
+    self.addTask = function(){
+      var task = self.buildTask('', false, null, self.project.id(), true);
+      self.tasks.push(task);
+      focusTask();
+    }
+
+    self.buildTask = function(name, completed, id, project_id, editing){
+      return { 
+        name: ko.observable(name).extend({ rateLimit: 500 }), 
+        completed: ko.observable(completed), 
+        id: ko.observable(id), 
+        project_id: ko.observable(self.project.id()), 
+        editing: ko.observable(editing) 
+      }
+    }
+
+    self.saveTask = function(obj){
+      obj.editing(false);
+      var data = {
+        name: obj.name(),
+        completed: obj.completed()
+      }
+      self.postTask(obj.id(), obj.project_id(), data);
     }
 
     // via Culero Connor http://www.paulirish.com/2009/random-hex-color-code-snippets/
@@ -61,7 +91,7 @@ $(function(){
           self.project_list(data);
         },
         error: function(jqXHR, status, error){ 
-          self.errors.push("Could not load projects") 
+          self.errors.push("Could not get projects: "+error) 
         }
       });
     }
@@ -77,21 +107,22 @@ $(function(){
           self.project.id(data.id);
           self.project.name(data.name);
           self.project.color(data.color);
-          self.project.tasks(data.tasks);
-          
+          self.tasks.removeAll();
+          if(data.tasks != undefined){
+            $.each(data.tasks, function(i){
+              var task = self.buildTask(this.name, this.completed, this.id, data.id, false);
+              self.tasks.push(task);
+            });
+          }
         },
         error: function(jqXHR, status, error){ 
-          self.errors.push("Could not load project") 
+          self.errors.push("Could not get project: "+error) 
         }
       });
     }
 
-    self.postProject = function(id){
-      var data = {
-        name: self.project.name(),
-        color: self.project.color()
-      }, 
-      url, method;
+    self.postProject = function(id, data){
+      var url, method;
 
       if(id != undefined){
         url = "/projects/"+id;
@@ -113,7 +144,7 @@ $(function(){
             self.project.id(data.id);
           },
           error: function(jqXHR, status, error){ 
-            self.errors.push("Could not save project") 
+            self.errors.push("Could not save project: "+error) 
           }
         });
       }
@@ -131,9 +162,68 @@ $(function(){
           self.getProjectList()
         },
         error: function(jqXHR, status, error){ 
-          self.errors.push(error);
+          self.errors.push("Could not delete project: "+error) 
         }
       });
+    }
+
+
+    self.postTask = function(obj){
+      var url, method,
+          data = {
+            name: obj.name(),
+            completed: obj.completed()
+          }
+      obj.editing(false);
+
+      if(obj.id() != undefined){
+        url = "/projects/"+obj.project_id()+"/tasks/"+obj.id();
+        method = "PATCH"
+      }else{
+        url = "/projects/"+obj.project_id()+"/tasks/";
+        method = "POST"
+      }
+      if(data.name.length > 0){
+        return $.ajax({
+          url: url,
+          method: method,
+          dataType: 'json',
+          data: { task: data },
+          beforeSend: self.queueUp,
+          complete: self.queueDown,
+          success: function(data, status, jqXHR){
+            obj.id(data.id);
+          },
+          error: function(jqXHR, status, error){
+            obj.editing(true);
+            self.errors.push("Could not save task: "+error) 
+          }
+        });
+      }
+    }
+
+
+    self.deleteTask = function(obj){
+
+      if(obj.id() != undefined){
+        return $.ajax({
+          url: "/projects/"+obj.project_id()+"/tasks/"+obj.id(),
+          method: 'DELETE',
+          dataType: 'json',
+          beforeSend: self.queueUp,
+          complete: self.queueDown,
+          success: function(data, status, jqXHR){ 
+            self.tasks.remove(function(task) { return task.id() == obj.id() })
+          },
+          error: function(jqXHR, status, error){ 
+            self.errors.push("Could not delete task: "+error) 
+          }
+        });
+      }else{
+        self.tasks.remove(obj)
+      }
+
+
     }
 
   }; // END viewModel
@@ -146,6 +236,7 @@ $(function(){
 
   // DOM Methods
   function focusTitle(){ $('#project_title').focus(); }
+  function focusTask(){ $('#project_title').focus(); }
 
   function highlightNav(id){
     $('.project-list__item a').removeClass('active');

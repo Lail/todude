@@ -1,25 +1,33 @@
-.project-list
-  %ul{ data: { bind: "foreach: { data: project_list }" } }
-    %li.project-list__item
-      .swatch{ data: { bind: "style: {background: $data.color}" } }
-      %a{ href: "#", data: { bind: "text: $data.name, click: $parent.openProject, attr: { 'data-project-id': $data.id, 'data-project-updated': $data.updated_since_epoch } " } }
+.page{ data: { bind: "style: {background: project.color}" } }
+  .project-list
+    %ul{ data: { bind: "foreach: { data: project_list }" } }
+      %li.project-list__item
+        .swatch{ data: { bind: "style: {background: $data.color}" } }
+        %a{ href: "#", data: { bind: "text: $data.name, click: $parent.openProject, attr: { 'data-project-id': $data.id, 'data-project-updated': $data.updated_since_epoch } " } }
 
-  %a.btn--new.projects__btn{ href: '#', data: { bind: "click: clearProject" } } New Project
+    %a.btn--new.projects__btn{ href: '#', data: { bind: "click: clearProject" } } New Project
 
 
-.project{ data: { bind: "with: project" } }
-  .swatch.project__swatch{ data: { bind: "style: {background: color}" } }
-  %h3{ data: { bind: "text: id" } }
-  %input#project_title.project__title{ data: { bind: "textInput: name, event: { keyup: $parent.saveProject }" }, placeholder: 'Name a new project...' }
-  %input#project_id{ data: { bind: "textInput: id" }, type: 'hidden' }
-  %ul{ data: { bind: "foreach: { data: tasks, as: 'task' }" } }
-    %li{ data: { bind: "text: name, css: {completed: completed}, attr: { 'data-task-id': id } " } }
-  %a.btn--delete{ href: '#', data: { bind: "visible: id, click: $parent.destroyProject" } } Delete Project
-  %a.btn--new.tasks__btn{ href: '#', data: { bind: "visible: id" } } New Task  
+  .project{ data: { bind: "with: project" } }
+    %h3{ data: { bind: "text: id" } }
+    %input#project_title.project__title{ data: { bind: "textInput: name, event: { keyup: $parent.saveProject }" }, placeholder: 'Name a new project...' }
+    %input#project_id{ data: { bind: "textInput: id" }, type: 'hidden' }
+    %a.btn.btn--delete{ href: '#', data: { bind: "visible: id, click: $parent.destroyProject" } } Delete
+  .tasks
+    %ul{ data: { bind: "foreach: { data: tasks }" } }
+      %li.task{ data: { bind: "tcss: {completed: $data.completed}, attr: { 'data-task-id': $data.id } " } }
+        %h4{ data: { bind: "text: $data.id" } }
+        %span{ data: { bind: "text: $data.name, visible: $data.editing() != true" } }
+        %input.task__title{ data: { bind: "textInput: $data.name, visible: $data.editing" }, placeholder: 'Name a new task...' }
+        %button.btn{data: { bind: "visible: $data.editing() != true, click: $parent.editTask" }} Edit
+        %button.btn{data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postTask" }} Save
+        %button.btn{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask", confirm: 'Are you sure?' }} Delete
+  .ui
+    %a.btn.tasks__btn{ href: '#', data: { bind: "visible: project.id, click: addTask" } } New Task  
 
-.loading{ data: { bind: "visible: loading" } } Loading...
+  .loading{ data: { bind: "visible: loading" } } Busy...
 
-%ul.errors{ data: { bind: "foreach: { data: errors }" } }
-  %li.error
-    %span{ data: { bind: "text: $data" } }
-    %button{ data: { bind: "click: $parent.clearError" } } X
+  %ul.errors{ data: { bind: "foreach: { data: errors }" } }
+    %li.error
+      %span{ data: { bind: "text: $data" } }
+      %button{ data: { bind: "click: $parent.clearError" } } X

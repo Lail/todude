@@ -33,7 +33,7 @@ class TasksController < ApplicationController
   def destroy
     @task = @project.tasks.find(params[:id])
     @task.destroy
-    render nothing: true, status: :ok
+    render json: @task, status: :ok
   end
 
   private
