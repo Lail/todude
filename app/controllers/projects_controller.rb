@@ -1,12 +1,13 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.all
-    render json: @projects
+    @projects = ProjectDecorator.decorate_collection(Project.order('created_at ASC'))
+    render :index
   end
 
   def show
-    @project = Project.find(params[:id])
-    render json: @project
+    @project = Project.includes(:tasks).find(params[:id]).decorate
+    @tasks = @project.tasks
+    render :show
   end
 
   def create
@@ -30,7 +31,7 @@ class ProjectsController < ApplicationController
   def destroy
     @project = Project.find(params[:id])
     @project.destroy
-    render nothing: true, status: :ok
+    render json: @project, status: :ok
   end
 
   private

@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :project do
     name "My lovely project"
-    color  Project::COLORS.sample
+    color  "#0099FF"
   end
 end
