@@ -10,20 +10,22 @@
 
   .project{ data: { bind: "with: project" } }
     %h3{ data: { bind: "text: id" } }
-    %input#project_title.project__title{ data: { bind: "textInput: name, event: { keyup: $parent.saveProject }" }, placeholder: 'Name a new project...' }
-    %input#project_id{ data: { bind: "textInput: id" }, type: 'hidden' }
-    %a.btn.btn--delete{ href: '#', data: { bind: "visible: id, click: $parent.destroyProject" } } Delete
+    %span{ data: { bind: "text: name, visible: $data.editing() != true" } }
+    %input#project_title.project__title{ data: { bind: "textInput: name, visible: $data.editing" }, placeholder: 'Name a new project...' }
+    %button.btn--edit{ href: '#', data: { bind: "visible: $data.editing() != true, click: $parent.editObj" } } Edit
+    %button.btn--save{ href: '#', data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postProject" } } Save
+    %button.btn--delete{ href: '#', data: { bind: "visible: $data.editing() != true, click: $parent.deleteProject", confirm: 'Are you sure?' } } Delete
   .tasks
     %ul{ data: { bind: "foreach: { data: tasks }" } }
       %li.task{ data: { bind: "tcss: {completed: $data.completed}, attr: { 'data-task-id': $data.id } " } }
         %h4{ data: { bind: "text: $data.id" } }
         %span{ data: { bind: "text: $data.name, visible: $data.editing() != true" } }
         %input.task__title{ data: { bind: "textInput: $data.name, visible: $data.editing" }, placeholder: 'Name a new task...' }
-        %button.btn{data: { bind: "visible: $data.editing() != true, click: $parent.editTask" }} Edit
-        %button.btn{data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postTask" }} Save
-        %button.btn{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask", confirm: 'Are you sure?' }} Delete
+        %button.btn--edit{data: { bind: "visible: $data.editing() != true, click: $parent.editObj" }} Edit
+        %button.btn--save{data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postTask" }} Save
+        %button.btn--delete{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask", confirm: 'Are you sure?' }} Delete
   .ui
-    %a.btn.tasks__btn{ href: '#', data: { bind: "visible: project.id, click: addTask" } } New Task  
+    %a.btn.tasks__btn{ href: '#', data: { bind: "visible: project.id, click: newTask" } } New Task  
 
   .loading{ data: { bind: "visible: loading" } } Busy...
 

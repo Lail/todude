@@ -7,9 +7,9 @@ $(function(){
     self.project_list = ko.observableArray();
     self.project = {
       	id: ko.observable(),
-      	name: ko.observable().extend({ rateLimit: 100 }),
-      	color: ko.observable('#eeeeee'),
-        editing: false
+      	name: ko.observable(''),
+      	color: ko.observable('#666'),
+        editing: ko.observable(true)
       }
     self.tasks = ko.observableArray();
     self.errors = ko.observableArray([]);
@@ -19,10 +19,11 @@ $(function(){
     self.queueUp = function(){ self.loading(self.loading() + 1) }
     self.queueDown = function (){ self.loading(self.loading() - 1) }
 
-    self.clearProject = function(){
+    self.clearProject = function(editing){
       self.project.id(null);
-      self.project.name(null);
+      self.project.name('');
       self.project.color(self.randomColor());
+      self.project.editing(true);
       self.tasks.removeAll();
       focusTitle();
     }
@@ -32,34 +33,32 @@ $(function(){
     }
 
     self.openProject = function(obj){
-      self.getProject(obj.id);
+      self.getProject(obj.id());
+      self.project.editing(false);
     }
 
-    self.editTask = function(obj){
+    self.editObj = function(obj){
       obj.editing(true);
     }
 
-    self.saveProject = function(obj){
-      var data = {
-        name: self.project.name(),
-        color: self.project.color()
-      }
-      self.postProject(self.project.id(), data);
-    }
-
-    self.destroyProject = function(obj){
-      self.deleteProject(self.project.id());
-    }
-
-    self.addTask = function(){
+    self.newTask = function(){
       var task = self.buildTask('', false, null, self.project.id(), true);
       self.tasks.push(task);
       focusTask();
     }
 
+    self.buildMenuProject = function(name, color, id, updated_since_epoch){
+      return {
+        name: ko.observable(name), 
+        color: ko.observable(color), 
+        id: ko.observable(id), 
+        updated_since_epoch: ko.observable(updated_since_epoch)     
+      }
+    }
+
     self.buildTask = function(name, completed, id, project_id, editing){
       return { 
-        name: ko.observable(name).extend({ rateLimit: 500 }), 
+        name: ko.observable(name), 
         completed: ko.observable(completed), 
         id: ko.observable(id), 
         project_id: ko.observable(self.project.id()), 
@@ -67,17 +66,23 @@ $(function(){
       }
     }
 
-    self.saveTask = function(obj){
-      obj.editing(false);
-      var data = {
-        name: obj.name(),
-        completed: obj.completed()
-      }
-      self.postTask(obj.id(), obj.project_id(), data);
-    }
-
     // via Culero Connor http://www.paulirish.com/2009/random-hex-color-code-snippets/
     self.randomColor = function(){ return '#'+(Math.random().toString(16) + '0000000').slice(2, 8) }
+
+
+    self.selectLatest = function(){
+      // Find the most recently updated of the projects in the projects_list
+      var latest = self.project_list()[0];
+      $.each(self.project_list(), function(i){
+        var ours = this.updated_since_epoch(),
+            theirs = latest.updated_since_epoch();
+        if(ours > theirs){
+          latest = this;
+        }
+      });
+      return latest;
+    }
+
 
     // API calls
     self.getProjectList = function(){
@@ -87,8 +92,12 @@ $(function(){
         dataType: 'json',
         beforeSend: self.queueUp,
         complete: self.queueDown,
-        success: function(data, status, jqXHR){ 
-          self.project_list(data);
+        success: function(data, status, jqXHR){
+          self.project_list.removeAll();
+          $.each(data, function(i){
+            var menu_project = self.buildMenuProject(this.name, this.color, this.id, this.updated_since_epoch);
+            self.project_list.push(menu_project);
+          })
         },
         error: function(jqXHR, status, error){ 
           self.errors.push("Could not get projects: "+error) 
@@ -121,11 +130,16 @@ $(function(){
       });
     }
 
-    self.postProject = function(id, data){
-      var url, method;
+    self.postProject = function(obj){
+      var data = {
+        name: obj.name(),
+        color: obj.color()
+      }, url, method;
 
-      if(id != undefined){
-        url = "/projects/"+id;
+      obj.editing(false);
+
+      if(obj.id() != undefined){
+        url = "/projects/"+obj.id();
         method = "PATCH"
       }else{
         url = "/projects";
@@ -140,26 +154,36 @@ $(function(){
           beforeSend: self.queueUp,
           complete: self.queueDown,
           success: function(data, status, jqXHR){ 
-            self.getProjectList(data.id);
-            self.project.id(data.id);
+            if(obj.id() != undefined){ // this was an update, shold already be in menu
+              $.each(self.project_list(), function(i){
+                if(this.id() == obj.id()){
+                  this.name(data.name);
+                }
+              });
+            }else{
+              var menu_project = self.buildMenuProject(data.name, data.color, data.id, data.updated_since_epoch);
+              self.project_list.push(menu_project);
+              obj.id(data.id);
+            }
           },
           error: function(jqXHR, status, error){ 
+            obj.editing(true);
             self.errors.push("Could not save project: "+error) 
           }
         });
       }
     }
 
-    self.deleteProject = function(id){
+    self.deleteProject = function(obj){
       return $.ajax({
-        url: "/projects/"+id,
+        url: "/projects/"+obj.id(),
         method: 'DELETE',
         dataType: 'json',
         beforeSend: self.queueUp,
         complete: self.queueDown,
         success: function(data, status, jqXHR){ 
+          self.project_list.remove(function(project) { return project.id() == obj.id() })
           self.clearProject();
-          self.getProjectList()
         },
         error: function(jqXHR, status, error){ 
           self.errors.push("Could not delete project: "+error) 
@@ -202,7 +226,6 @@ $(function(){
       }
     }
 
-
     self.deleteTask = function(obj){
 
       if(obj.id() != undefined){
@@ -236,7 +259,7 @@ $(function(){
 
   // DOM Methods
   function focusTitle(){ $('#project_title').focus(); }
-  function focusTask(){ $('#project_title').focus(); }
+  function focusTask(){ $('.tasks input').last().focus(); }
 
   function highlightNav(id){
     $('.project-list__item a').removeClass('active');
@@ -245,29 +268,15 @@ $(function(){
     }
   }
 
-
-  function selectLatest(){
-    // Find the most recently updated of the projects and return it
-    var latest = $('.project-list__item').first();
-    $('.project-list__item').each(function(i){
-      var $this = $(this),
-          ours = $this.find('a').data('project-updated'),
-          theirs = latest.find('a').data('project-updated');
-      if(ours > theirs){
-        latest = $this;
-      }
-    });
-    return latest;
-  }
-
   (function(){
     var view_model = new viewModel();
     ko.applyBindings(view_model);
     subscribers(view_model);
     view_model.getProjectList().done(function(){
-      var latest = selectLatest();
+      var latest = view_model.selectLatest();
       if(latest != undefined){
-        view_model.getProject(latest.find('a').data('project-id'));
+        view_model.getProject(latest.id());
+        view_model.project.editing(false);
       }
     });
     focusTitle();
