@@ -24,7 +24,7 @@ RSpec.describe Project, :type => :model do
   end
 
   it "requires a valid color" do
-    project = build :project, color: "000000"
+    project = build :project, color: "NO GOOD"
     expect(project).to be_invalid
   end
 

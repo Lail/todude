@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   resources :projects, except: [:new, :edit], constraints: { format: 'json' } do
-    resources :tasks, except: [:new, :edit], constraints: { format: 'json' }
+    resources :tasks, except: [:index, :new, :edit], constraints: { format: 'json' }
   end
 
   root 'pages#home'

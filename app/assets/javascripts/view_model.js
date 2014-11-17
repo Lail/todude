@@ -69,7 +69,6 @@ $(function(){
     // via Culero Connor http://www.paulirish.com/2009/random-hex-color-code-snippets/
     self.randomColor = function(){ return '#'+(Math.random().toString(16) + '0000000').slice(2, 8) }
 
-
     self.selectLatest = function(){
       // Find the most recently updated of the projects in the projects_list
       var latest = self.project_list()[0];
@@ -82,7 +81,6 @@ $(function(){
       });
       return latest;
     }
-
 
     // API calls
     self.getProjectList = function(){
@@ -137,7 +135,6 @@ $(function(){
       }, url, method;
 
       obj.editing(false);
-
       if(obj.id() != undefined){
         url = "/projects/"+obj.id();
         method = "PATCH"
@@ -191,7 +188,6 @@ $(function(){
       });
     }
 
-
     self.postTask = function(obj){
       var url, method,
           data = {
@@ -199,7 +195,6 @@ $(function(){
             completed: obj.completed()
           }
       obj.editing(false);
-
       if(obj.id() != undefined){
         url = "/projects/"+obj.project_id()+"/tasks/"+obj.id();
         method = "PATCH"
@@ -227,7 +222,6 @@ $(function(){
     }
 
     self.deleteTask = function(obj){
-
       if(obj.id() != undefined){
         return $.ajax({
           url: "/projects/"+obj.project_id()+"/tasks/"+obj.id(),
@@ -245,8 +239,6 @@ $(function(){
       }else{
         self.tasks.remove(obj)
       }
-
-
     }
 
   }; // END viewModel
@@ -281,7 +273,5 @@ $(function(){
     });
     focusTitle();
   })();
-
-
 
 })

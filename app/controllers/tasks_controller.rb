@@ -2,11 +2,6 @@ class TasksController < ApplicationController
 
   before_filter :get_project
 
-  def index
-    @tasks = @project.tasks
-    render json: @tasks
-  end
-
   def show
     @task = @project.tasks.find(params[:id])
     render json: @task

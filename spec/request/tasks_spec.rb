@@ -2,17 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Tasks", :type => :request do
 
-  it "returns a list of Tasks" do
-    project = create :project
-    5.times { create :task, project: project }
-    get "/projects/#{project.id}/tasks"
-    expect(response).to be_success
-    expect(json.count).to eq(5)
-  end
-
   it "returns a single Task" do
     task = create :task
-    get "/projects/#{task.project.id}/tasks/#{task.id}"
+    get "/projects/#{task.project.id}/tasks/#{task.id}", format: :json
     expect(response).to be_success
     expect(json['name']).to eq(task.name)
   end

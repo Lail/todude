@@ -1,15 +1,12 @@
 .page{ data: { bind: "style: {background: project.color}" } }
   .project-list
+    %a.btn--new.projects__btn{ href: '#', data: { bind: "click: clearProject" } } New Project
     %ul{ data: { bind: "foreach: { data: project_list }" } }
       %li.project-list__item
         .swatch{ data: { bind: "style: {background: $data.color}" } }
         %a{ href: "#", data: { bind: "text: $data.name, click: $parent.openProject, attr: { 'data-project-id': $data.id, 'data-project-updated': $data.updated_since_epoch } " } }
 
-    %a.btn--new.projects__btn{ href: '#', data: { bind: "click: clearProject" } } New Project
-
-
   .project{ data: { bind: "with: project" } }
-    %h3{ data: { bind: "text: id" } }
     %span{ data: { bind: "text: name, visible: $data.editing() != true" } }
     %input#project_title.project__title{ data: { bind: "textInput: name, visible: $data.editing" }, placeholder: 'Name a new project...' }
     %button.btn--edit{ href: '#', data: { bind: "visible: $data.editing() != true, click: $parent.editObj" } } Edit
@@ -18,7 +15,6 @@
   .tasks
     %ul{ data: { bind: "foreach: { data: tasks }" } }
       %li.task{ data: { bind: "tcss: {completed: $data.completed}, attr: { 'data-task-id': $data.id } " } }
-        %h4{ data: { bind: "text: $data.id" } }
         %span{ data: { bind: "text: $data.name, visible: $data.editing() != true" } }
         %input.task__title{ data: { bind: "textInput: $data.name, visible: $data.editing" }, placeholder: 'Name a new task...' }
         %button.btn--edit{data: { bind: "visible: $data.editing() != true, click: $parent.editObj" }} Edit

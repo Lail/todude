@@ -12,15 +12,6 @@ RSpec.describe Task, :type => :model do
     expect(task).to be_invalid
   end
 
-  it "requires a unique name per project" do
-    name = "This won't be unique"
-    project = create :project
-    first_task = create :task, project: project, name: name
-    second_task = build :task, project: project, name: name
-    expect(first_task).to be_valid
-    expect(second_task).to be_invalid
-  end
-
   it "requires a name with a reasonable length" do
     too_long = 'X' * 501
     task = build :task, name: too_long
