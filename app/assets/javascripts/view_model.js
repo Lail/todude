@@ -82,6 +82,11 @@ $(function(){
       return latest;
     }
 
+    self.toggleCompleted = function(obj){
+      obj.completed(!obj.completed());
+      self.postTask(obj);
+    }
+
     // API calls
     self.getProjectList = function(){
       return $.ajax({
@@ -142,33 +147,31 @@ $(function(){
         url = "/projects";
         method = "POST"
       }
-      if(data.name.length > 0){
-        return $.ajax({
-          url: url,
-          method: method,
-          dataType: 'json',
-          data: { project: data },
-          beforeSend: self.queueUp,
-          complete: self.queueDown,
-          success: function(data, status, jqXHR){ 
-            if(obj.id() != undefined){ // this was an update, shold already be in menu
-              $.each(self.project_list(), function(i){
-                if(this.id() == obj.id()){
-                  this.name(data.name);
-                }
-              });
-            }else{
-              var menu_project = self.buildMenuProject(data.name, data.color, data.id, data.updated_since_epoch);
-              self.project_list.push(menu_project);
-              obj.id(data.id);
-            }
-          },
-          error: function(jqXHR, status, error){ 
-            obj.editing(true);
-            self.errors.push("Could not save project: "+error) 
+      return $.ajax({
+        url: url,
+        method: method,
+        dataType: 'json',
+        data: { 'project': data },
+        beforeSend: self.queueUp,
+        complete: self.queueDown,
+        success: function(data, status, jqXHR){ 
+          if(method == "PATCH"){ // this was an update, should already be in menu
+            $.each(self.project_list(), function(i){
+              if(this.id() == obj.id()){
+                this.name(data.name);
+              }
+            });
+          }else{
+            var menu_project = self.buildMenuProject(data.name, data.color, data.id, data.updated_since_epoch);
+            self.project_list.push(menu_project);
+            obj.id(data.id);
           }
-        });
-      }
+        },
+        error: function(jqXHR, status, error){ 
+          obj.editing(true);
+          self.errors.push("Could not save project: "+error) 
+        }
+      });
     }
 
     self.deleteProject = function(obj){
