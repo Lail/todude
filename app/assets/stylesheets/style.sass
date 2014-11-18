@@ -1,22 +1,65 @@
 $highlight: #eeee00
 $ground: #ffffff
+$rule: 1px dotted rgba(0,0,0,0.15)
+$normal: 'Roboto', sans-serif
+$condensed: 'Roboto Condensed', sans-serif
+
+*
+  box-sizing: border-box
+  font-size: 15px
 
 body
   margin: 0
   padding: 0
+  font-family: $normal
 
 .page
   padding: 20px
   height: 100%
-  -webkit-transition: background-color 2s, -webkit-transform 2s
-  transition: background-color 2s, transform 2s
+  -webkit-transition: background-color 1s
+  transition: background-color 1s
+
+.content
+  position: relative
+  max-width: 900px
+  min-height: 600px
+  margin: 0 auto
+  background: rgba(255,255,255,0.8)
+  box-shadow: 0 10px 90px -20px rgba(0,0,0,0.2), 0 30px 20px -20px rgba(0,0,0,0.1)
+  &:before
+    content: ''
+    display: block
+    position: absolute
+    z-index: 0
+    left: 33.33%
+    top: 0
+    bottom: 0
+    width: 66.66%
+    background: $ground
+    border-left: $rule
+
+button
+  border: none
+  min-width: 8em
+  padding: 0.5em
+  border-radius: 3px
+.btn--new
+  background: #33dd99
 
 .active
   background: $highlight
 
+nav
+  position: relative
+  background: rgba(0,0,0,0.8)
+  padding: 0.5em
+  text-align: right
 
-.project-list
-  background: rgba(255,255,255,0.8)
+aside
+  float: left
+  width: 33.33%
+  font-family: $condensed
+  padding-left: 2em
   ul
     padding: 0
     margin: 0
@@ -24,13 +67,20 @@ body
     li:first-child
       border-top: none
   li
-    padding: 1em 2em
-    border-top: 1px solid rgba(0,0,0,0.2)
+    padding: 1em 2em 1em 0
+    border-top: $rule
   .swatch
     display: inline-block
     width: 0.5em
     height: 0.5em
     border-radius: 1em
 
-.project
-  background: $ground
+section
+  float: left
+  width: 66.66%
+  z-index: 1
+  position: relative
+  padding: 1em 2rem
+
+.completed
+  text-decoration: line-through

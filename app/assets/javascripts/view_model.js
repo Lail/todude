@@ -142,7 +142,9 @@ $(function(){
       obj.editing(false);
       if(obj.id() != undefined){
         url = "/projects/"+obj.id();
-        method = "PATCH"
+        // Use PUT rather than PATCH so PhantomJS won't lose params 
+        // https://github.com/ariya/phantomjs/issues/11384
+        method = "PUT" 
       }else{
         url = "/projects";
         method = "POST"
@@ -200,7 +202,9 @@ $(function(){
       obj.editing(false);
       if(obj.id() != undefined){
         url = "/projects/"+obj.project_id()+"/tasks/"+obj.id();
-        method = "PATCH"
+        // Use PUT rather than PATCH so PhantomJS won't lose params 
+        // https://github.com/ariya/phantomjs/issues/11384        
+        method = "PUT"
       }else{
         url = "/projects/"+obj.project_id()+"/tasks/";
         method = "POST"
