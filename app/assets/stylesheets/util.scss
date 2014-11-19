@@ -1,0 +1,39 @@
+$pixelBase : 14;
+
+@function parseInt($n) {
+	@return $n / ($n * 0 + 1);
+}
+
+@function u($values){ 
+
+      $list: (); 
+
+      @each $value in $values { 
+            @if $value == 0 or type_of($value) != "number" {
+                  $list: append($list, $value);
+            }
+            @else {
+                  $unit : unit($value); 
+                  $val  : parseInt($value); 
+
+                  @if ($px-only) and ($unit == 'rem') { 
+                        $list: append($list, ($val * $pixelBase) + px); 
+                  }
+                  @else if($unit == 'px') or ($unit == 'rem'){ 
+                        $list: append($list, $value); 
+                  }
+                  @else {
+                        @warn 'There is no unit conversion for #{$unit}'; 
+                  }
+            }
+      }
+      @return $list();
+}
+
+
+@mixin old-ie {
+    // Only use this content if we're dealing with old IE
+    @if $old-ie {
+        @content;
+    }
+}

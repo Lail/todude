@@ -1,3 +1,6 @@
+$px-only: false
+@import 'util'
+
 $highlight: #eeee00
 $ground: #ffffff
 $rule: 1px dotted rgba(0,0,0,0.15)
@@ -6,81 +9,177 @@ $condensed: 'Roboto Condensed', sans-serif
 
 *
   box-sizing: border-box
-  font-size: 15px
+  outline: none
+
+html
+  font-size: 62.5%
+  height: 100%
 
 body
   margin: 0
   padding: 0
+  font-size: u(1.4rem)
   font-family: $normal
 
-.page
-  padding: 20px
-  height: 100%
-  -webkit-transition: background-color 1s
-  transition: background-color 1s
+input, select, textarea, button
+  font-family: inherit
 
-.content
-  position: relative
-  max-width: 900px
-  min-height: 600px
-  margin: 0 auto
-  background: rgba(255,255,255,0.8)
-  box-shadow: 0 10px 90px -20px rgba(0,0,0,0.2), 0 30px 20px -20px rgba(0,0,0,0.1)
-  &:before
-    content: ''
-    display: block
-    position: absolute
-    z-index: 0
-    left: 33.33%
-    top: 0
-    bottom: 0
-    width: 66.66%
-    background: $ground
-    border-left: $rule
+h4
+  font-family: $condensed
+  text-transform: uppercase
+  font-weight: 400
+  font-size: u(1.1rem)
+  border-bottom: $rule
 
 button
   border: none
-  min-width: 8em
-  padding: 0.5em
-  border-radius: 3px
-.btn--new
-  background: #33dd99
-
-.active
-  background: $highlight
+  padding: u(0.5rem)
+  border-radius: u(0.3rem)
+  font-size: u(1.2rem)
+  &:hover
+    cursor: pointer
+    opacity: 0.8
+  &:disabled
+    cursor: default
+    background: #ddd
+    &:hover
+      opacity: 1
 
 nav
   position: relative
   background: rgba(0,0,0,0.8)
-  padding: 0.5em
+  padding: u(0.5rem)
   text-align: right
 
 aside
   float: left
-  width: 33.33%
+  width: 25%
   font-family: $condensed
-  padding-left: 2em
   ul
     padding: 0
     margin: 0
     list-style: none
     li:first-child
       border-top: none
-  li
-    padding: 1em 2em 1em 0
-    border-top: $rule
+  li   
+    
   .swatch
-    display: inline-block
-    width: 0.5em
-    height: 0.5em
-    border-radius: 1em
+    position: absolute
+    display: block
+    top: 0
+    left: 0
+    bottom: 0
+    width: u(0.4rem)
+  a
+    padding: u(1rem 2rem 1rem 1.5rem)
+    text-decoration: none
+    display: block
+    position: relative
+    color: #333
+    box-shadow: u(0 0.1rem 0 rgba(0,0,0,0.07))
+
+    -webkit-transition: background-color 1s
+    transition: background-color 1s
+
+    &:hover
+      background: rgba(255,255,255,0.5)
+    &.active
+      background: #ffffff
+      box-shadow: none
 
 section
-  float: left
-  width: 66.66%
+  float: right
+  width: 75%
   z-index: 1
   position: relative
-  padding: 1em 2rem
+  padding: u(4rem 2rem)
 
-.completed
+.project
+  overflow: hidden
+  padding: u(2rem 0)
+  .project__title, h1
+    float: left
+    width: 80%
+    font-weight: 100
+    font-size: u(3.5rem)
+    margin: 0
+    border: 0
+    padding: u(0.5rem 0)
+    border-bottom: u(0.2rem solid transparent)
+  .project__title
+    border-bottom: u(0.2rem dotted #333)
+  menu
+    padding: u(1.6rem 0)
+
+menu
+  float: right
+  text-align: right
+  width: 15%
+  margin: 0
+  padding: 0
+
+.page
+  padding: u(2rem)
+  height: 100%
+  -webkit-transition: background-color 1s
+  transition: background-color 1s
+
+.content
+  position: relative
+  overflow: hidden
+  min-width: u(50rem)
+  max-width: u(120rem)
+  min-height: u(60rem)
+  margin: 0 auto
+  background: rgba(255,255,255,0.8)
+  box-shadow: u(0 1rem 9rem -2rem rgba(0,0,0,0.2)), u(0 3rem 2rem -2rem rgba(0,0,0,0.1))
+  &:before
+    content: ''
+    display: block
+    position: absolute
+    z-index: 0
+    left: 25%
+    top: 0
+    bottom: 0
+    width: 75%
+    background: $ground
+
+.tasks
+  a, textarea
+    float: left
+    width: 75%
+  ul
+    list-style: none
+    padding: 0
+
+.task
+  overflow: hidden
+  border-bottom: $rule
+  line-height: u(3rem)
+  padding: u(1rem 0)
+  a
+    display: block
+    
+
+.completed a
   text-decoration: line-through
+
+.btn--new, .btn--save
+  background: #45C08F
+  color: #fff
+  color: rgba(255,255,255,0.9)
+  nav &
+    color: rgba(0,0,0,0.8)
+.btn--delete
+  padding: u(0.7rem 0.5rem)
+  border-radius: u(3rem)
+  background: #D55157
+  color: #fff
+  color: rgba(255,255,255,0.9)
+.btn--edit
+  padding: u(0.7rem 0.5rem)
+  border-radius: u(3rem)
+  background: #4661A2
+  color: #fff
+  color: rgba(255,255,255,0.9)
+

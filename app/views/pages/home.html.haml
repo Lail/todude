@@ -1,29 +1,33 @@
 .page{ data: { bind: "style: {background: project.color}" } }
   .content
     %nav
-      %button.btn--new.projects__btn{ data: { bind: "click: clearProject" } } New Project
+      %button.btn--new.projects__btn.icon-add{ data: { bind: "click: clearProject" } } New Project
     %aside
       %ul{ data: { bind: "foreach: { data: project_list }" } }
         %li.project-list__item
-          .swatch{ data: { bind: "style: {background: $data.color}" } }
-          %a{ href: "#", data: { bind: "text: $data.name, click: $parent.openProject, attr: { 'data-project-id': $data.id, 'data-project-updated': $data.updated_since_epoch } " } }
+          %a{ href: "#", data: { bind: "click: $parent.openProject, attr: { 'data-project-id': $data.id, 'data-project-updated': $data.updated_since_epoch } " } }
+            .swatch{ data: { bind: "style: {background: $data.color}" } }
+            %span{ data: { bind: "text: $data.name"} }
     %section
       .project{ data: { bind: "with: project" } }
-        %span{ data: { bind: "text: name, visible: $data.editing() != true" } }
-        %input#project_title.project__title{name: 'project_title', data: { bind: "textInput: name, visible: $data.editing" }, placeholder: 'Name a new project...' }
-        %button.btn--edit{ data: { bind: "visible: $data.editing() != true, click: $parent.editObj" } } Edit
-        %button.btn--save{ data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postProject" } } Save
-        %button.btn--delete{ data: { bind: "visible: $data.editing() != true, click: $parent.deleteProject", confirm: 'Are you sure?' } } Delete
-      .tasks
+        %h1{ data: { bind: "text: name, visible: $data.editing() != true" } }
+        %textarea#project_title.project__title{name: 'project_title', data: { bind: "textInput: name, visible: $data.editing" }, placeholder: 'Name a new project...' }
+        %menu
+          %button.btn--edit.icon-edit{ data: { bind: "visible: $data.editing() != true, click: $parent.editTitle" } }
+          %button.btn--save{ data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postProject" } } Save
+          %button.btn--delete.icon-delete{ data: { bind: "visible: $data.editing() != true, click: $parent.deleteProject", confirm: 'Are you sure?' } }
+      .tasks{ data: {bind: "visible: project.id"}}
+        %h4{ data: {bind: "text: tasksTitle" }}
         %ul{ data: { bind: "foreach: { data: tasks }" } }
           %li.task{ data: { bind: "css: {completed: $data.completed}, attr: { 'data-task-id': $data.id } " } }
             %a{ href: '#', data: { bind: "text: $data.name, visible: $data.editing() != true, click: $parent.toggleCompleted" } }
-            %input{ name: "task_title", data: { bind: "textInput: $data.name, visible: $data.editing" }, placeholder: 'Name a new task...' }
-            %button.btn--edit{data: { bind: "visible: $data.editing() != true, click: $parent.editObj" }} Edit
-            %button.btn--save{data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postTask" }} Save
-            %button.btn--delete{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask", confirm: 'Are you sure?' }} Delete
+            %textarea{ name: "task_title", data: { bind: "textInput: $data.name, visible: $data.editing" }, placeholder: 'Name a new task...' }
+            %menu
+              %button.btn--edit.icon-edit{data: { bind: "visible: $data.editing() != true, click: $parent.editTask" }}
+              %button.btn--save{data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postTask" }} Save
+              %button.btn--delete.icon-delete{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask", confirm: 'Are you sure?' }}
       .ui
-        %button.btn--new{ data: { bind: "visible: project.id, click: newTask" } } New Task  
+        %button.btn--new.icon-add{ data: { bind: "visible: project.id, click: newTask" } } New Task  
 
       .loading{ data: { bind: "visible: loading" } } Busy...
 

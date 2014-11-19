@@ -15,6 +15,11 @@ $(function(){
     self.errors = ko.observableArray([]);
     self.loading = ko.observable(0);
 
+    self.tasksTitle = ko.computed(function() {
+      var count = self.tasks().length;
+      return count == 1 ? "1 Task" : count + " Tasks";
+    });
+
     // Methods
     self.queueUp = function(){ self.loading(self.loading() + 1) }
     self.queueDown = function (){ self.loading(self.loading() - 1) }
@@ -37,9 +42,15 @@ $(function(){
       self.project.editing(false);
     }
 
-    self.editObj = function(obj){
+    self.editTitle = function(obj){
       obj.editing(true);
+      focusTitle();
     }
+
+    self.editTask = function(obj){
+      obj.editing(true);
+      focusTask(obj);
+    }    
 
     self.newTask = function(){
       var task = self.buildTask('', false, null, self.project.id(), true);
@@ -157,7 +168,7 @@ $(function(){
         beforeSend: self.queueUp,
         complete: self.queueDown,
         success: function(data, status, jqXHR){ 
-          if(method == "PATCH"){ // this was an update, should already be in menu
+          if(method == "PUT"){ // this was an update, should already be in menu
             $.each(self.project_list(), function(i){
               if(this.id() == obj.id()){
                 this.name(data.name);
@@ -258,7 +269,14 @@ $(function(){
 
   // DOM Methods
   function focusTitle(){ $('#project_title').focus(); }
-  function focusTask(){ $('.tasks input').last().focus(); }
+  function focusTask(obj){ 
+    if(typeof obj === "undefined"){
+      $('.tasks textarea').last().focus(); 
+    }else{
+      $('.tasks [data-task-id='+obj.id()+'] textarea').focus(); 
+    }
+    
+  }
 
   function highlightNav(id){
     $('.project-list__item a').removeClass('active');
