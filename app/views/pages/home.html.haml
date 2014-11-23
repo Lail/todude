@@ -1,6 +1,7 @@
 .page{ data: { bind: "style: {background: project.color}" } }
   .content
     %nav
+      .loading.icon-spinner.animate-spin{ data: { bind: "visible: loading" } }
       %button.btn--new.projects__btn.icon-add{ data: { bind: "click: clearProject" } } New Project
     %aside
       %ul{ data: { bind: "foreach: { data: project_list }" } }
@@ -15,9 +16,9 @@
         %menu
           %button.btn--edit.icon-edit{ data: { bind: "visible: $data.editing() != true, click: $parent.editTitle" } }
           %button.btn--save{ data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postProject" } } Save
-          %button.btn--delete.icon-delete{ data: { bind: "visible: $data.editing() != true, click: $parent.deleteProject", confirm: 'Are you sure?' } }
-      .tasks{ data: {bind: "visible: project.id"}}
-        %h4{ data: {bind: "text: tasksTitle" }}
+          %button.btn--delete.icon-delete{ data: { bind: "visible: $data.editing() != true, click: $parent.deleteProject" } }
+      .tasks{ data: { bind: "visible: project.id" }}
+        %h4{ data: { bind: "text: tasksTitle" }}
         %ul{ data: { bind: "foreach: { data: tasks }" } }
           %li.task{ data: { bind: "css: {completed: $data.completed}, attr: { 'data-task-id': $data.id } " } }
             %a{ href: '#', data: { bind: "text: $data.name, visible: $data.editing() != true, click: $parent.toggleCompleted" } }
@@ -25,13 +26,13 @@
             %menu
               %button.btn--edit.icon-edit{data: { bind: "visible: $data.editing() != true, click: $parent.editTask" }}
               %button.btn--save{data: { bind: "visible: $data.editing, disable: $data.name().length < 1, click: $parent.postTask" }} Save
-              %button.btn--delete.icon-delete{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask", confirm: 'Are you sure?' }}
+              %button.btn--delete.icon-delete{data: { bind: "visible: $data.editing() != true, click: $parent.deleteTask" }}
       .ui
-        %button.btn--new.icon-add{ data: { bind: "visible: project.id, click: newTask" } } New Task  
+        %button.btn--new.icon-add{ data: { bind: "visible: project.id, click: newTask, disable: editingTasks" } } Add Task  
 
-      .loading{ data: { bind: "visible: loading" } } Busy...
-
-      %ul.errors{ data: { bind: "foreach: { data: errors }" } }
-        %li.error
-          %span{ data: { bind: "text: $data" } }
-          %button{ data: { bind: "click: $parent.clearError" } } OK
+      .errors{ data:{ bind: "visible: errors().length" }}
+        %button{ data: { bind: "click: clearErrors" } } OK
+        %ul{ data: { bind: "foreach: { data: errors }" } }
+          %li.error
+            %span{ data: { bind: "text: $data" } }
+            

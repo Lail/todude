@@ -18,7 +18,7 @@ html
 body
   margin: 0
   padding: 0
-  font-size: u(1.4rem)
+  font-size: r(1.4rem)
   font-family: $normal
 
 input, select, textarea, button
@@ -28,14 +28,14 @@ h4
   font-family: $condensed
   text-transform: uppercase
   font-weight: 400
-  font-size: u(1.1rem)
+  font-size: r(1.1rem)
   border-bottom: $rule
 
 button
   border: none
-  padding: u(0.5rem)
-  border-radius: u(0.3rem)
-  font-size: u(1.2rem)
+  padding: r(0.5rem)
+  border-radius: r(0.3rem)
+  font-size: r(1.2rem)
   &:hover
     cursor: pointer
     opacity: 0.8
@@ -48,8 +48,14 @@ button
 nav
   position: relative
   background: rgba(0,0,0,0.8)
-  padding: u(0.5rem)
+  padding: r(0.5rem)
   text-align: right
+.loading
+  position: absolute
+  top: r(1.5rem)
+  left: r(1rem)
+  color: #555
+  color: rgba(255,255,255,0.2)  
 
 aside
   float: left
@@ -69,14 +75,14 @@ aside
     top: 0
     left: 0
     bottom: 0
-    width: u(0.4rem)
+    width: r(0.4rem)
   a
-    padding: u(1rem 2rem 1rem 1.5rem)
+    padding: r(1rem 2rem 1rem 1.5rem)
     text-decoration: none
     display: block
     position: relative
     color: #333
-    box-shadow: u(0 0.1rem 0 rgba(0,0,0,0.07))
+    box-shadow: r(0 0.1rem 0 rgba(0,0,0,0.07))
 
     -webkit-transition: background-color 1s
     transition: background-color 1s
@@ -92,24 +98,24 @@ section
   width: 75%
   z-index: 1
   position: relative
-  padding: u(4rem 2rem)
+  padding: r(4rem 2rem)
 
 .project
   overflow: hidden
-  padding: u(2rem 0)
+  padding: r(2rem 0)
   .project__title, h1
     float: left
     width: 80%
     font-weight: 100
-    font-size: u(3.5rem)
+    font-size: r(3.5rem)
     margin: 0
     border: 0
-    padding: u(0.5rem 0)
-    border-bottom: u(0.2rem solid transparent)
+    padding: r(0.5rem 0)
+    border-bottom: r(0.2rem solid transparent)
   .project__title
-    border-bottom: u(0.2rem dotted #333)
+    border-bottom: r(0.2rem dotted #333)
   menu
-    padding: u(1.6rem 0)
+    padding: r(1.6rem 0)
 
 menu
   float: right
@@ -119,7 +125,7 @@ menu
   padding: 0
 
 .page
-  padding: u(2rem)
+  padding: r(2rem)
   height: 100%
   -webkit-transition: background-color 1s
   transition: background-color 1s
@@ -127,12 +133,12 @@ menu
 .content
   position: relative
   overflow: hidden
-  min-width: u(50rem)
-  max-width: u(120rem)
-  min-height: u(60rem)
+  min-width: r(50rem)
+  max-width: r(90rem)
+  min-height: r(60rem)
   margin: 0 auto
   background: rgba(255,255,255,0.8)
-  box-shadow: u(0 1rem 9rem -2rem rgba(0,0,0,0.2)), u(0 3rem 2rem -2rem rgba(0,0,0,0.1))
+  box-shadow: r(0 1rem 9rem -2rem rgba(0,0,0,0.2)), r(0 3rem 2rem -2rem rgba(0,0,0,0.1))
   &:before
     content: ''
     display: block
@@ -155,31 +161,44 @@ menu
 .task
   overflow: hidden
   border-bottom: $rule
-  line-height: u(3rem)
-  padding: u(1rem 0)
+  line-height: r(3rem)
+  padding: r(1rem 0)
   a
     display: block
-    
+
 
 .completed a
   text-decoration: line-through
 
 .btn--new, .btn--save
   background: #45C08F
-  color: #fff
-  color: rgba(255,255,255,0.9)
-  nav &
-    color: rgba(0,0,0,0.8)
 .btn--delete
-  padding: u(0.7rem 0.5rem)
-  border-radius: u(3rem)
+  padding: r(0.7rem 0.5rem)
+  border-radius: r(3rem)
   background: #D55157
-  color: #fff
-  color: rgba(255,255,255,0.9)
 .btn--edit
-  padding: u(0.7rem 0.5rem)
-  border-radius: u(3rem)
+  padding: r(0.7rem 0.5rem)
+  border-radius: r(3rem)
   background: #4661A2
+[class^=btn--]
   color: #fff
   color: rgba(255,255,255,0.9)
+
+.errors
+  background: rgba(200,50,100,0.8)
+  color:  #fff
+  position: fixed
+  top: 0
+  left: 50%
+  width: r(50rem)
+  margin: r(0 0 0 -25rem)
+  ul
+    width: r(30rem)
+  button
+    position: absolute
+    right: r(1rem)
+    top: r(1rem)
+    color:  #fff
+    border: r(0.1rem solid #fff)
+    background: transparent
 

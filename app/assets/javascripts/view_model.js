@@ -20,6 +20,16 @@ $(function(){
       return count == 1 ? "1 Task" : count + " Tasks";
     });
 
+    self.editingTasks = ko.computed(function() {
+      var editing = false;
+      $.each(self.tasks(), function(task){
+        if(this.editing() == true){
+          editing = true
+        }
+      });
+      return editing;
+    }).extend({ notify: 'always' });;    
+
     // Methods
     self.queueUp = function(){ self.loading(self.loading() + 1) }
     self.queueDown = function (){ self.loading(self.loading() - 1) }
@@ -33,8 +43,8 @@ $(function(){
       focusTitle();
     }
 
-    self.clearError = function(error){
-      self.errors.remove(error);
+    self.clearErrors = function(obj){
+      self.errors.removeAll();
     }
 
     self.openProject = function(obj){
@@ -80,6 +90,7 @@ $(function(){
     // via Culero Connor http://www.paulirish.com/2009/random-hex-color-code-snippets/
     self.randomColor = function(){ return '#'+(Math.random().toString(16) + '0000000').slice(2, 8) }
 
+    // DOM stuff
     self.selectLatest = function(){
       // Find the most recently updated of the projects in the projects_list
       var latest = self.project_list()[0];
@@ -94,6 +105,7 @@ $(function(){
     }
 
     self.toggleCompleted = function(obj){
+      // Mark a Task completed
       obj.completed(!obj.completed());
       self.postTask(obj);
     }
@@ -188,20 +200,24 @@ $(function(){
     }
 
     self.deleteProject = function(obj){
-      return $.ajax({
-        url: "/projects/"+obj.id(),
-        method: 'DELETE',
-        dataType: 'json',
-        beforeSend: self.queueUp,
-        complete: self.queueDown,
-        success: function(data, status, jqXHR){ 
-          self.project_list.remove(function(project) { return project.id() == obj.id() })
-          self.clearProject();
-        },
-        error: function(jqXHR, status, error){ 
-          self.errors.push("Could not delete project: "+error) 
-        }
-      });
+      if(confirm("Are you sure?")){
+        return $.ajax({
+          url: "/projects/"+obj.id(),
+          method: 'DELETE',
+          dataType: 'json',
+          beforeSend: self.queueUp,
+          complete: self.queueDown,
+          success: function(data, status, jqXHR){ 
+            self.project_list.remove(function(project) { return project.id() == obj.id() })
+            self.clearProject();
+          },
+          error: function(jqXHR, status, error){ 
+            self.errors.push("Could not delete project: "+error) 
+          }
+        });
+      }else{
+        return false;
+      }
     }
 
     self.postTask = function(obj){
@@ -240,23 +256,28 @@ $(function(){
     }
 
     self.deleteTask = function(obj){
-      if(obj.id() != undefined){
-        return $.ajax({
-          url: "/projects/"+obj.project_id()+"/tasks/"+obj.id(),
-          method: 'DELETE',
-          dataType: 'json',
-          beforeSend: self.queueUp,
-          complete: self.queueDown,
-          success: function(data, status, jqXHR){ 
-            self.tasks.remove(function(task) { return task.id() == obj.id() })
-          },
-          error: function(jqXHR, status, error){ 
-            self.errors.push("Could not delete task: "+error) 
-          }
-        });
+      if(confirm("Are you sure?")){
+        if(obj.id() != undefined){
+          return $.ajax({
+            url: "/projects/"+obj.project_id()+"/tasks/"+obj.id(),
+            method: 'DELETE',
+            dataType: 'json',
+            beforeSend: self.queueUp,
+            complete: self.queueDown,
+            success: function(data, status, jqXHR){ 
+              self.tasks.remove(function(task) { return task.id() == obj.id() })
+            },
+            error: function(jqXHR, status, error){ 
+              self.errors.push("Could not delete task: "+error) 
+            }
+          });
+        }else{
+          self.tasks.remove(obj)
+        }
       }else{
-        self.tasks.remove(obj)
+        return false;
       }
+
     }
 
   }; // END viewModel
